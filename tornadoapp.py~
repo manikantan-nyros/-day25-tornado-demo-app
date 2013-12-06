@@ -52,10 +52,11 @@ settings = {
 }
 
 application = web.Application([
-		(r'/', IndexHandler),
-		(r'/insert',DatabaseHandler),
-		(r'/deletedoc',DeleteDocDatabaseHandler)
-		],**settings)
+	(r'/', IndexHandler),
+	(r'/index', IndexHandler),
+	(r'/api/v1/stories',StoriesHandler),
+	(r'/api/v1/stories/(.*)', StoryHandler)
+],**settings)
 
 if __name__ == "__main__":
 	application.listen(8888)

@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<title>To-App</title>
+
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=no; target-densityDpi=device-dpi" />
+
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/themes/humanity/jquery-ui.css" type="text/css" media="all">
+
+<link rel="stylesheet" href="{{ static_url("style.css") }}" type="text/css" media="all">
+
+ <link rel="icon" type="image/png" href="{{ static_url("favicon.ico") }}">
+</head>
+
+<body>
+
+<div id="sidebar">
+
+<div id="fixlabel">Wunder List</div>
+
+<a href="#" id="label1"><img src="{{ static_url('inboxicon.png') }}"/>&nbsp;&nbsp;Inbox
+
+<div id="todoitemscount"></div>
+</a>
+
+</div>
+<div id="maincontent">
+<div id="contntheadre">
+<img src="{{ static_url('hide.png') }}" width="20" height="16" title="Hide Labels Sidebar"  id="button"/>
+Inbox
+</div>
+
+<input type="text" id="additem" name="additem" placeholder="Add To-Do item ..." autocomplete="off">
+
+
+<br>
+<br>
+
+
+	<ul class="todoList ui-sortable" id="todolistitems">
+		
+		{% for book in books %}
+			<li  class="todo"><div class="text">
+			{{ book['text'] }}
+			</div> <a href='#' title='Delete' class="itemDelete"></a></li>
+		{% end %}	
+			
+    </ul>
+
+
+
+
+
+<!-- Including our scripts -->
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script>
+<script type="text/javascript" src="{{ static_url("script.js") }}"></script>
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all  ui-draggable" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-dialog-confirm" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix" unselectable="on"><span class="ui-dialog-title" id="ui-dialog-title-dialog-confirm" unselectable="on">Delete TODO Item?</span><a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button" unselectable="on"><span class="ui-icon ui-icon-closethick" unselectable="on">close</span></a></div><div id="dialog-confirm" class="ui-dialog-content ui-widget-content" style="display: block;">Are you sure you want to delete this TODO item?</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Delete item</span></button><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false"><span class="ui-button-text">Cancel</span></button></div></div>
+			
+</div>
+
+</body>
+</html>
