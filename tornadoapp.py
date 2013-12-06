@@ -6,43 +6,37 @@ import json
 from bson import json_util
 from bson.objectid import ObjectId
 
-"""
+
 MONGODB_DB_URL = os.environ.get('OPENSHIFT_MONGODB_DB_URL') if os.environ.get('OPENSHIFT_MONGODB_DB_URL') else 'mongodb://localhost:27017/'
 MONGODB_DB_NAME = os.environ.get('OPENSHIFT_APP_NAME') if os.environ.get('OPENSHIFT_APP_NAME') else 'getbookmarks'
 
 client = MongoClient(MONGODB_DB_URL)
 db = client[MONGODB_DB_NAME]
-"""
+
 class IndexHandler(web.RequestHandler):
 	def get(self):
-		#print repr(self.request) #cliet req ip log
-		#conn = pymongo.Connection("mongodb://rmkrjy:googleyahoo@widmore.mongohq.com:10010/tododb")
-		#conn = pymongo.Connection("localhost", 27017)
-		#db=conn['tododb']
-		#collection=db['todocol']
-		books=db.todocol.find()
-		self.render('usertodolist.htm',books = books)#manikantan change template here
+		self.render("index.html")
 
-class DatabaseHandler(web.RequestHandler):
-	def post(self):
-		text=self.get_argument('additem')
-		if(text!=''):
-			#conn = pymongo.Connection("mongodb://rmkrjy:googleyahoo@widmore.mongohq.com:10010/tododb")
-			#conn = pymongo.Connection("localhost", 27017)
-			#db=conn['tododb']
-			#collection=db['todocol']
-			db.todocol.insert({"text":text})
+class StoriesHandler(web.RequestHandler):
+	def get(self):
+		stories = db.stories.find()
+		self.set_header("Content-Type", "application/json")
+		self.write(json.dumps(list(stories),default=json_util.default))
 		
-		
-class DeleteDocDatabaseHandler(web.RequestHandler):
-	def post(self):
-		deleteitem=self.get_argument('deletetodo')
-		#conn = pymongo.Connection("mongodb://rmkrjy:googleyahoo@widmore.mongohq.com:10010/tododb")
-		#conn = pymongo.Connection("localhost", 27017)
-		#db=conn['tododb']
-		#collection=db['todocol']
-		db.todocol.remove({"text":deleteitem})
 
+	def post(self):
+		story_data = json.loads(self.request.body)
+		story_id = db.stories.insert(story_data)
+		print('story created with id ' + str(story_id))
+		self.set_header("Content-Type", "application/json")
+		self.set_status(201)
+		
+
+class StoryHandler(web.RequestHandler):
+	def get(self , story_id):
+		story = db.stories.find_one({"_id":ObjectId(str(story_id))})
+		self.set_header("Content-Type", "application/json")
+		self.write(json.dumps((story),default=json_util.default))
 
 
 settings = {
@@ -52,10 +46,11 @@ settings = {
 }
 
 application = web.Application([
-		(r'/', IndexHandler),
-		(r'/insert',DatabaseHandler),
-		(r'/deletedoc',DeleteDocDatabaseHandler)
-		],**settings)
+	(r'/', IndexHandler),
+	(r'/index', IndexHandler),
+	(r'/api/v1/stories',StoriesHandler),
+	(r'/api/v1/stories/(.*)', StoryHandler)
+],**settings)
 
 if __name__ == "__main__":
 	application.listen(8888)
